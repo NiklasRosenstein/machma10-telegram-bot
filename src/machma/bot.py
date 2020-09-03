@@ -79,7 +79,6 @@ async def add_alias(message: types.Message):
 def add_user(user):
     if not api.has_user(user['id']):
         api.add_user(user['id'], user['username'], user['first_name'], user['last_name'])
-        db.session.commit()
 
 
 def tg_link(user_id):

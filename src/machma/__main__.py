@@ -6,9 +6,9 @@ from typing import Optional
 import click
 import sys
 
-from . import bot
-from . import db
+from . import api, bot, db
 from .bot import config
+from machma.tests.dummy_data import create_dummy_data
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,10 +44,8 @@ def cli(
 
     db.initialize_db(config.database_url, create_tables=create_tables, echo=sql_debug)
     if dummy_data:
-        from machma.tests.dummy_data import create_dummy_data
         with db.make_session():
             create_dummy_data()
-            db.session.commit()
 
     if not ctx.invoked_subcommand:
         bot.run()
@@ -59,8 +57,6 @@ def repl(c: Optional[str]):
     """
     Start an interactive interpreter session with the database API.
     """
-
-    from . import api
 
     local = {k: getattr(db, k) for k in db.__all__}
     local['session'] = db.session
