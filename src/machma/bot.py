@@ -2,14 +2,11 @@
 import html
 import logging
 import textwrap
-from pathlib import Path
 
-import nr.proxy
 from aiogram import Bot, executor, types
 from tabulate import tabulate
 
 from . import api, db
-from .config import Config
 from .utils.aiogram.dispatcher import ProxyDispatcher
 
 dp = ProxyDispatcher()

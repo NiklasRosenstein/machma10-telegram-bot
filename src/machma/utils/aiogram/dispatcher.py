@@ -1,5 +1,5 @@
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher
 
 
 class ProxyDispatcher:
