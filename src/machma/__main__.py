@@ -4,10 +4,13 @@ import logging
 from typing import Optional
 
 import click
+import sys
 
 from . import bot
 from . import db
 from .bot import config
+
+LOGGER = logging.getLogger(__name__)
 
 
 @click.group(invoke_without_command=True)
@@ -71,4 +74,4 @@ def repl(c: Optional[str]):
 
 
 if __name__ == '__main__':
-    cli()
+    cli()  # pylint: disable=no-value-for-parameter

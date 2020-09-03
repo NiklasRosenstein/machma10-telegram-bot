@@ -2,13 +2,8 @@
 import contextlib
 import functools
 import logging
-import sqlite3
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, Optional
 
 import nr.proxy
-from deprecated import deprecated
 from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -19,7 +14,7 @@ from .utils.sqlalchemy.guc import GucHelper
 LOGGER = logging.getLogger(__name__)
 Base = declarative_base()
 Session = sessionmaker()
-session = nr.proxy.threadlocal(
+session = nr.proxy.threadlocal[Session](
     name=__name__ + '.session',
     error_message=
         '({name}) No SqlAlchemy session is available. Ensure that you are using the '

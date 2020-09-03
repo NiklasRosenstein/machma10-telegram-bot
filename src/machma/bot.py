@@ -1,7 +1,6 @@
 
 import html
 import logging
-import pprint
 import textwrap
 from pathlib import Path
 

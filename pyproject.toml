@@ -16,10 +16,10 @@ toml = "^0.10.1"
 "databind.core" = "^0.3.0"
 "databind.json" = "^0.3.0"
 click = "^7.1.2"
-deprecated = "^1.2.10"
 "nr.proxy" = "1.0.0"
 
 [tool.poetry.dev-dependencies]
+pylint = "^2.6.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
