@@ -1,0 +1,2 @@
+api-token = "API_TOKEN"
+database-url = "sqlite:///bot.db"

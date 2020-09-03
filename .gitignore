@@ -4,5 +4,5 @@
 __pycache__/
 
 # machma10-telegram-bot
-api_token.txt
+config.toml
 bot.db
