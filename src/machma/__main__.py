@@ -2,13 +2,14 @@
 import code
 import logging
 import sys
+from pathlib import Path
 from typing import Optional
 
 import click
 
 from machma.tests.dummy_data import create_dummy_data
 from . import api, bot, db
-from .bot import config
+from .config import Config
 
 LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ LOGGER = logging.getLogger(__name__)
 @click.option('--dummy-data', is_flag=True, help='Initialize the ethereal DB with dummy data.')
 @click.option('--create-tables', is_flag=True, help='Create tables when initializing the DB connection.')
 @click.option('--sql-debug', is_flag=True, help='Echo SQL statements as they get executed.')
+@click.option('--config', 'config_file', type=Path, default='config.toml', help='Path to the TOML configuration file.')
 @click.pass_context
 def cli(
     ctx: click.Context,
@@ -25,6 +27,7 @@ def cli(
     dummy_data: bool,
     create_tables: bool,
     sql_debug: bool,
+    config_file: Path,
 ) -> None:
     """
     Machma10 Telegram Bot.
@@ -33,6 +36,8 @@ def cli(
     """
 
     logging.basicConfig(level=logging.INFO)
+
+    config = Config.load(config_file)
 
     if ethereal_db:
         config.database_url = 'sqlite:///:memory:'
@@ -48,7 +53,7 @@ def cli(
             create_dummy_data()
 
     if not ctx.invoked_subcommand:
-        bot.run()
+        bot.run(config.api_token)
 
 
 @cli.command()

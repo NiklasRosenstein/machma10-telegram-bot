@@ -4,18 +4,20 @@ import logging
 import textwrap
 from pathlib import Path
 
-from aiogram import Bot, Dispatcher, executor, types
+import nr.proxy
+from aiogram import Bot, executor, types
 from tabulate import tabulate
 
 from . import api, db
 from .config import Config
+from .utils.aiogram.dispatcher import ProxyDispatcher
 
-# TODO: Initialize from main() function. This is not currently possible because the
-#   token needs to be available when the #Bot object is created, and it seems that the
-#   Bot object cannot be bound to the dispatcher in a delayed fashion.
-config = Config.load(Path('config.toml'))
-bot = Bot(token=config.api_token)
-dp = Dispatcher(bot)
+dp = ProxyDispatcher()
+
+
+def run(api_token: str) -> None:
+    bot = Bot(token=api_token)
+    executor.start_polling(dp.to_dispatcher(bot), skip_updates=True)
 
 
 @dp.message_handler(commands=['help', 'hilfe', 'commands', 'befehle'])
@@ -144,7 +146,3 @@ async def show_exercises(message : types.Message):
         link = exercises[ex]['link']
         table.append(('<a href="{}">{}</a>'.format(link, exercise) if link is not None else exercise,))
     await message.answer(tabulate(table, headers=['Übung']), parse_mode = 'html', disable_web_page_preview=True)
-
-
-def run():
-    executor.start_polling(dp, skip_updates=True)
