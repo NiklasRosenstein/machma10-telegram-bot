@@ -1,14 +1,14 @@
 
 import code
 import logging
+import sys
 from typing import Optional
 
 import click
-import sys
 
+from machma.tests.dummy_data import create_dummy_data
 from . import api, bot, db
 from .bot import config
-from machma.tests.dummy_data import create_dummy_data
 
 LOGGER = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ def repl(c: Optional[str]):
 
     with db.make_session():
         if c:
-            exec(c, local, local)
+            exec(c, local, local)  # pylint: disable=exec-used
         else:
             code.interact(local=local)
 

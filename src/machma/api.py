@@ -14,6 +14,7 @@ from .db import session, Exercise, ExerciseAlias, User, UserReps, F
 class ApiError(Exception):
 
     def __init__(self, entity_id: Any, message: Optional[str] = None):
+        super().__init__()
         self.entity_id = entity_id
         self.message = message
 
