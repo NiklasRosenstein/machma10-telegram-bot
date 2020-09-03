@@ -14,11 +14,3 @@ with their reps.
 2. Install the bot by running `poetry install`.
 
 3. Run the bot with `python3 -m machma.bot`
-
-## Todo
-
-* Migrate to SqlAlchemy
-* Validate link passed to `/exercise`
-* Case-insensitive exercise names
-* Allow exercise renames
-* Only count todos from since a user joined
