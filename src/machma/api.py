@@ -118,7 +118,7 @@ def get_user_reps(user_id: int) -> Dict[str, int]:
     return dict(_get_user_reps(user_id))
 
 
-def get_user_reps_for_exercise(user_id: int, exercise: str):
+def get_user_reps_for_exercise(user_id: int, exercise: str) -> int:
     return _get_reps_for_exercise(_get_user_reps(user_id), exercise)
 
 
