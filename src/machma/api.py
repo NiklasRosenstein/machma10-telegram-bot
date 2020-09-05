@@ -45,8 +45,7 @@ def _get_max_reps():
     return (session
         .query(Exercise.exercise_name, F.max(F.coalesce(UserReps.reps, 0)).label('reps'))
         .group_by(Exercise.exercise_name)
-        .outerjoin(UserReps)
-    )
+        .outerjoin(UserReps))
 
 
 def _get_user_reps(user_id: int):
@@ -68,16 +67,14 @@ def _get_user_reps(user_id: int):
 def _get_user_todo_reps(user_id: int):
     max_reps = _get_max_reps().subquery()
     user_reps = _get_user_reps(user_id).subquery()
-    return (
-        session
+    return (session
         .query(
             max_reps.c.exercise_name.label('exercise_name'),
             (max_reps.c.reps - user_reps.c.reps).label('reps'),
         )
         .select_from(
             max_reps.join(user_reps, max_reps.c.exercise_name == user_reps.c.exercise_name)
-        )
-    )
+        ))
 
 
 def _get_reps_for_exercise(query, exercise: str) -> int:
