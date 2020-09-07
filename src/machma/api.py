@@ -42,7 +42,8 @@ class ExerciseDoesNotExistError(ExerciseError):
 
 
 def _get_max_reps():
-    return (session
+    return (
+        session
         .query(Exercise.exercise_name, F.max(F.coalesce(UserReps.reps, 0)).label('reps'))
         .group_by(Exercise.exercise_name)
         .outerjoin(UserReps))
@@ -56,18 +57,19 @@ def _get_user_reps(user_id: int):
     # Get a subquery for the reps of that user.
     user_reps = user.reps.subquery()
     # Left outer join the reps on th exercises.
-    query = (session
+    query = (
+        session
         .query(Exercise.exercise_name, F.coalesce(user_reps.c.reps, 0).label('reps'))
         .select_from(Exercise)
-        .outerjoin(user_reps)
-    )
+        .outerjoin(user_reps))
     return query
 
 
 def _get_user_todo_reps(user_id: int):
     max_reps = _get_max_reps().subquery()
     user_reps = _get_user_reps(user_id).subquery()
-    return (session
+    return (
+        session
         .query(
             max_reps.c.exercise_name.label('exercise_name'),
             (max_reps.c.reps - user_reps.c.reps).label('reps'),
@@ -140,7 +142,7 @@ def add_to_user_reps(user_id: int, exercise: str, reps: int) -> None:
 
 def get_exercise_by_alias(alias: str) -> Optional[str]:
     row = (session.query(ExerciseAlias.exercise_name)
-        .filter(ExerciseAlias.exercise_alias == alias).first())
+           .filter(ExerciseAlias.exercise_alias == alias).first())
     if row:
         return row[0]
     return None
@@ -152,12 +154,12 @@ def add_alias(alias, exercise):
 
 def has_alias(alias: str) -> None:
     return (session.query(ExerciseAlias)
-        .filter(ExerciseAlias.exercise_alias == alias).count()) > 0
+            .filter(ExerciseAlias.exercise_alias == alias).count()) > 0
 
 
 def has_exercise(exercise: str) -> None:
     return (session.query(Exercise)
-        .filter(Exercise.exercise_name == exercise).count()) > 0
+            .filter(Exercise.exercise_name == exercise).count()) > 0
 
 
 def add_exercise(exercise: str, link: Optional[str] = None) -> None:

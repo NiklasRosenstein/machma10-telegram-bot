@@ -130,7 +130,6 @@ def test_add_to_user_reps__create_new():
     assert db.get(db.UserReps, on=dict(user_id=2, exercise_name='Situps')) is not None
 
 
-
 @with_db
 def test_get_exercise_by_alias():
     assert api.get_exercise_by_alias('Triceps') == 'Dips'
