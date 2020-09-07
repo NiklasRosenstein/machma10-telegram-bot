@@ -130,10 +130,12 @@ def get_user_todo_reps_for_exercise(user_id: int, exercise: str) -> int:
 def add_to_user_reps(user_id: int, exercise: str, reps: int) -> None:
     if not has_exercise(exercise):
         raise ExerciseDoesNotExistError(exercise)
-    (db.get(UserReps, user_id=user_id, exercise_name=exercise)
-        .then_update(reps=UserReps.reps + reps)
-        .or_create(reps=reps)
-        .done())
+    db.get(
+        UserReps,
+        on=dict(user_id=user_id, exercise_name=exercise),
+        then_update=dict(reps=UserReps.reps + reps),
+        or_create=dict(reps=reps),
+    )
 
 
 def get_exercise_by_alias(alias: str) -> Optional[str]:
@@ -169,7 +171,7 @@ def get_exercises() -> Dict[str, Dict[str, Any]]:
 
 
 def set_exercise_link(exercise: str, link: Optional[str]) -> None:
-    db.get(Exercise, exercise_name=exercise).then_update(exercise_link=link).done()
+    db.get(Exercise, on=dict(exercise_name=exercise), then_update=dict(exercise_link=link))
 
 
 def add_user(
