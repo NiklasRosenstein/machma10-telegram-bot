@@ -17,9 +17,8 @@ Base = declarative_base()
 Session = sessionmaker()
 session = nr.proxy.threadlocal[Session](
     name=__name__ + '.session',
-    error_message=
-        '({name}) No SqlAlchemy session is available. Ensure that you are using the '
-        'make_session() context manager before accessing the global session proxy.',
+    error_message='({name}) No SqlAlchemy session is available. Ensure that you are using the '
+                  'make_session() context manager before accessing the global session proxy.',
 )
 
 T_Base = TypeVar('T_Base', bound=Base)
@@ -64,7 +63,7 @@ def make_session() -> None:
     nr.proxy.push(session, Session())
     try:
         yield
-    except:
+    except:  # noqa
         session.rollback()
         raise
     else:
