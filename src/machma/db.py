@@ -2,14 +2,15 @@
 import contextlib
 import functools
 import logging
+from typing import Any, Dict, Optional, Type, TypeVar
 
 import nr.proxy
 from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql import and_
 from sqlalchemy import func as F
-
-from .utils.sqlalchemy.guc import GucHelper
 
 LOGGER = logging.getLogger(__name__)
 Base = declarative_base()
@@ -20,6 +21,9 @@ session = nr.proxy.threadlocal[Session](
         '({name}) No SqlAlchemy session is available. Ensure that you are using the '
         'make_session() context manager before accessing the global session proxy.',
 )
+
+T_Base = TypeVar('T_Base', bound=Base)
+
 
 __all__ = [
     'Base',
@@ -83,8 +87,47 @@ def async_session(func):
     return wrapper
 
 
-def get(entity, **pks) -> GucHelper:
-    return GucHelper(session, entity, **pks)
+def get(
+    entity: Type[T_Base],
+    on: Dict[str, Any],
+    then_update: Optional[Dict[str, Any]] = None,
+    or_create: Optional[Dict[str, Any]] = None,
+) -> T_Base:
+    """
+    Returns a row from the specified *entity* that matches the columns specified in *on*.
+    Depending on the arguments, the instance will then be updated with the values from
+    *then_update*, or a new row will be created from the merged values of *on* and *or_create*.
+    """
+
+    filters = and_(*(getattr(entity, k) == v for k, v in on.items()))
+    query = session.query(entity).filter(filters)
+
+    try:
+        instance = query.one()
+    except NoResultFound:
+        if or_create is not None:
+            instance = entity(**on, **or_create)
+            session.add(instance)
+        else:
+            raise
+    else:
+        if then_update is not None:
+            for key, value in then_update.items():
+                setattr(instance, key, value)
+            session.add(instance)
+
+    return instance
+
+
+def get_or_none(
+    entity: Type[T_Base],
+    on: Dict[str, Any],
+    then_update: Optional[Dict[str, Any]] = None,
+) -> Optional[T_Base]:
+    try:
+        return get(entity, on=on, then_update=then_update)
+    except NoResultFound:
+        return None
 
 
 class Exercise(Base):

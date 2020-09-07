@@ -116,7 +116,7 @@ def test_add_to_user_reps__update_existing():
 @with_db
 def test_add_to_user_reps__create_new():
     # Create new user reps. First assert that the reps row doesn't exist yet.
-    assert db.get(db.UserReps, user_id=2, exercise_name='Situps').done() is None
+    assert db.get_or_none(db.UserReps, on=dict(user_id=2, exercise_name='Situps')) is None
     assert api.get_user_reps_for_exercise(2, 'Situps') == 0
     assert api.get_user_reps(2)['Situps'] == 0
     assert api.get_user_todo_reps_for_exercise(2, 'Situps') == 20
@@ -127,7 +127,7 @@ def test_add_to_user_reps__create_new():
     assert api.get_user_todo_reps_for_exercise(2, 'Situps') == 0
 
     # Now assert that the reps row exists.
-    assert db.get(db.UserReps, user_id=2, exercise_name='Situps').done() is not None
+    assert db.get(db.UserReps, on=dict(user_id=2, exercise_name='Situps')) is not None
 
 
 
